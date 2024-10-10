@@ -53057,16 +53057,16 @@ console.log(`owner, repo: ${owner}, ${repo}`);
 const eventPayload = JSON.parse(
   (0,node_fs__WEBPACK_IMPORTED_MODULE_2__.readFileSync)(String(node_process__WEBPACK_IMPORTED_MODULE_3__.env.GITHUB_EVENT_PATH), 'utf8')
 )
-console.log(`eventPayload: ${eventPayload}`)
+console.log(`eventPayload: `, eventPayload)
 
 const pull_number = Number(eventPayload.pull_request.number)
 console.log(`pull_number: ${pull_number}`)
 
 const listFiles = await octokit.pulls.listFiles({ owner, repo, pull_number })
-console.log(`await octokit.pulls.listFiles({ owner: ${owner}, repo: ${repo}, pull_number: ${pull_number} }) = ${listFiles}`)
+console.log(`await octokit.pulls.listFiles({ owner: ${owner}, repo: ${repo}, pull_number: ${pull_number} }) = `, listFiles);
 
 const pullRequestFiles = listFiles.data.map((file) => file.filename)
-console.log(`pullRequestFiles = ${pullRequestFiles}`)
+console.log(`pullRequestFiles = `, pullRequestFiles);
 
 // Get the diff between the head branch and the base branch (limit to the files in the pull request)
 const diff = await (0,_actions_exec__WEBPACK_IMPORTED_MODULE_1__.getExecOutput)(
@@ -53074,18 +53074,19 @@ const diff = await (0,_actions_exec__WEBPACK_IMPORTED_MODULE_1__.getExecOutput)(
   ['diff', '--unified=0', '--', ...pullRequestFiles],
   { silent: true }
 )
-console.log(`Diff: ${diff}`)
+console.log(`Diff: `, diff);
+console.log(`Diff json: `, JSON.stringify(diff));
 console.log(`Diff output: ${diff.stdout}`)
 
 // Create an array of changes from the diff output based on patches
 const parsedDiff = (0,parse_git_diff__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .A)(diff.stdout)
-console.log(`parsedDiff = ${parsedDiff}`);
+console.log(`parsedDiff = `, parsedDiff);
 
 // Get changed files from parsedDiff (changed files have type 'ChangedFile')
 const changedFiles = parsedDiff.files.filter(
   (file) => file.type === 'ChangedFile'
 )
-console.log(`changedFiles = ${changedFiles}`);
+console.log(`changedFiles = `, changedFiles);
 
 const generateSuggestionBody = (changes) => {
   const suggestionBody = changes
@@ -53122,7 +53123,7 @@ function createMultiLineComment(path, fromFileRange, changes) {
 const existingComments = (
   await octokit.pulls.listReviewComments({ owner, repo, pull_number })
 ).data
-console.log(`existingComments: ${existingComments}`)
+console.log(`existingComments: `, existingComments)
 
 // Function to generate a unique key for a comment
 const generateCommentKey = (comment) =>
